@@ -1,6 +1,6 @@
 # 🏥 Patient Management System – Project Reflection
 
-
+[![wakatime](https://wakatime.com/badge/user/7e817c98-c383-4c9a-abdf-0bc9e74be88d/project/99e5de32-faeb-4f1c-be2d-8ed272213580.svg)](https://wakatime.com/badge/user/7e817c98-c383-4c9a-abdf-0bc9e74be88d/project/99e5de32-faeb-4f1c-be2d-8ed272213580)
 
 ## 📘 About This Project
 
