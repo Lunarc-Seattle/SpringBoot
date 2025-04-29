@@ -8,7 +8,7 @@
 This project is a simple version of a **Patient Management System**, built as I followed along with the YouTube video. It's based on microservices using **Java Spring Boot**, and I also learned how to use tools like **Docker**, **Kafka**, **gRPC**, and **AWS (via LocalStack)**.
 
 I'm still a student, and this is my first time building something at this scale. I definitely ran into a lot of bugs and moments where I felt lost, but it was really rewarding to see each part work step by step.
-You can find my Spring Boot notes and thoughts in the [*documentations* directory](https://github.com/Lunarc-Seattle/SpringBoot/blob/f0c9682d55d1dd5e5c747bacef3a7f21ba86749e/documentations).
+You can find my Spring Boot notes and thoughts in the [*documentations* directory](documentations).
 
 ---
 
