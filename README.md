@@ -3,7 +3,7 @@
 [![wakatime](https://wakatime.com/badge/user/7e817c98-c383-4c9a-abdf-0bc9e74be88d/project/99e5de32-faeb-4f1c-be2d-8ed272213580.svg?style=flat-square)](https://wakatime.com/badge/user/7e817c98-c383-4c9a-abdf-0bc9e74be88d/project/99e5de32-faeb-4f1c-be2d-8ed272213580)
 [![wakatime](https://wakatime.com/badge/user/7e817c98-c383-4c9a-abdf-0bc9e74be88d/project/99e5de32-faeb-4f1c-be2d-8ed272213580.svg?style=for-the-badge)](https://wakatime.com/badge/user/7e817c98-c383-4c9a-abdf-0bc9e74be88d/project/99e5de32-faeb-4f1c-be2d-8ed272213580)
 
-## 📘 About This Project
+##  About This Project
 
 This project is a simple version of a **Patient Management System**, built as I followed along with the YouTube video. It's based on microservices using **Java Spring Boot**, and I also learned how to use tools like **Docker**, **Kafka**, **gRPC**, and **AWS (via LocalStack)**.
 
@@ -37,7 +37,8 @@ You can find my Spring Boot notes and thoughts in the [*documentations* director
 
 ---
 
-## ✍️ My Learning Notes
+## My Learning Notes
+most of the notes are in the [*documentations* directory](https://github.com/Lunarc-Seattle/SpringBoot/blob/f0c9682d55d1dd5e5c747bacef3a7f21ba86749e/documentations).
 
 - **gRPC** was completely new to me. It was confusing at first, but once I understood how `proto` files work, it started to make sense.
 - **Kafka** was very cool! Setting up producers and consumers helped me understand real-world event-driven systems.
