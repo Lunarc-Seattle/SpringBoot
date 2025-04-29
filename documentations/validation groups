@@ -1,0 +1,172 @@
+好的，以下是一个 **完整的 Spring Boot 项目示例**，演示如何使用 **Validation Groups（校验分组）** 来区分“创建用户”和“更新用户”的请求参数校验逻辑。
+
+---
+
+## ✅ 示例结构
+
+```
+src/
+ └── main/
+     └── java/
+         └── com.example.validation/
+             ├── ValidationGroups.java     ← 分组接口
+             ├── UserDTO.java              ← DTO 带校验注解
+             ├── UserController.java       ← 控制器
+             └── DemoApplication.java      ← 启动类
+```
+
+---
+
+### 1. `ValidationGroups.java`
+
+```java
+package com.example.validation;
+
+public class ValidationGroups {
+    public interface Create {}
+    public interface Update {}
+}
+```
+
+---
+
+### 2. `UserDTO.java`
+
+```java
+package com.example.validation;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public class UserDTO {
+
+    @NotNull(groups = ValidationGroups.Update.class, message = "更新时必须提供用户ID")
+    private Long id;
+
+    @NotBlank(groups = {ValidationGroups.Create.class, ValidationGroups.Update.class}, message = "用户名不能为空")
+    private String username;
+
+    @NotBlank(groups = ValidationGroups.Create.class, message = "创建用户时密码不能为空")
+    private String password;
+
+    // Getters & Setters
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+}
+```
+
+---
+
+### 3. `UserController.java`
+
+```java
+package com.example.validation;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+
+    @PostMapping
+    public ResponseEntity<String> createUser(
+        @Validated(ValidationGroups.Create.class) @RequestBody UserDTO userDTO
+    ) {
+        return ResponseEntity.ok("✅ 用户创建成功: " + userDTO.getUsername());
+    }
+
+    @PutMapping
+    public ResponseEntity<String> updateUser(
+        @Validated(ValidationGroups.Update.class) @RequestBody UserDTO userDTO
+    ) {
+        return ResponseEntity.ok("✅ 用户更新成功: ID=" + userDTO.getId());
+    }
+}
+```
+
+---
+
+### 4. `DemoApplication.java`
+
+```java
+package com.example.validation;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DemoApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+    }
+}
+```
+
+---
+
+### 🧪 测试示例
+
+#### ✅ 创建用户请求
+```http
+POST /users
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "123456"
+}
+```
+✅ 成功
+
+---
+
+#### ❌ 创建用户缺密码
+```http
+POST /users
+Content-Type: application/json
+
+{
+  "username": "alice"
+}
+```
+❌ 报错：`创建用户时密码不能为空`
+
+---
+
+#### ✅ 更新用户请求
+```http
+PUT /users
+Content-Type: application/json
+
+{
+  "id": 1001,
+  "username": "bob"
+}
+```
+✅ 成功
+
+---
+
+#### ❌ 更新用户缺 ID
+```http
+PUT /users
+Content-Type: application/json
+
+{
+  "username": "bob"
+}
+```
+❌ 报错：`更新时必须提供用户ID`
+
+---
+
+如果你需要，我可以为你打包成一个可运行的 Spring Boot 工程或者提供 Markdown 版项目文档，哪种你更需要？
