@@ -2,31 +2,35 @@ package com.pm.patientservice.service;
 
 import com.pm.patientservice.dto.PatientRequestDTO;
 import com.pm.patientservice.dto.PatientResponseDTO;
+import com.pm.patientservice.exception.EmailAlreadyExistsException;
+import com.pm.patientservice.exception.PatientNotFoundException;
 import com.pm.patientservice.mapper.PatientMapper;
 import com.pm.patientservice.model.Patient;
 import com.pm.patientservice.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service //@Service 是一个注解，表示这个类是一个服务类（即包含业务逻辑的类）。
 public class PatientService {
     private PatientRepository patientRepository;
 
-    public PatientService(PatientRepository patientRepository){
+    public PatientService(PatientRepository patientRepository) {
         //这是构造函数，它在创建 PatientService 对象时会注入一个 PatientRepository，也就是数据库操作的工具，帮助获取患者信息。
         this.patientRepository = patientRepository;
     }
 
-    public List<PatientResponseDTO> getPatients(){
+    public List<PatientResponseDTO> getPatients() {
         //这是一个方法，它会从数据库中获取所有患者的信息。
         List<Patient> patients = patientRepository.findAll(); // findall() is a JPA method to create a query
         //这一行代码是通过 patientRepository.findAll() 从数据库中获取所有的患者记录。
-        List<PatientResponseDTO>  patientResponseDOTs =
+        List<PatientResponseDTO> patientResponseDOTs =
                 patients.stream().map(PatientMapper::toDTO).toList();
         //  before replace with lamda:  List<PatientResponseDTO>  patientResponseDOTs =
-                //patients.stream().map(patient -> PatientMapper.toDTO(patient)).toList();
+        //patients.stream().map(patient -> PatientMapper.toDTO(patient)).toList();
 
         //通过流（stream）处理患者数据，
         // patients.stream() 表示将患者列表变成一个流，
@@ -40,7 +44,10 @@ public class PatientService {
 
     // service layer
 
-    public PatientResponseDTO createPatient (PatientRequestDTO patientRequestDTO){
+    public PatientResponseDTO createPatient(PatientRequestDTO patientRequestDTO) {
+        if (patientRepository.existsByEmail(patientRequestDTO.getEmail())) {
+            throw new EmailAlreadyExistsException("A patient with this email is already" + patientRequestDTO.getEmail());
+        }
         Patient newPatient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
 
         return PatientMapper.toDTO(newPatient);
@@ -66,4 +73,18 @@ public class PatientService {
 
     //（比如像“厨房的原材料” vs “餐桌上的菜”那样的比喻）
 
+
+    public PatientResponseDTO updatePatient(UUID id, PatientRequestDTO patientRequestDTO) {
+        Patient patient = patientRepository.findById(id).orElseThrow(()->new PatientNotFoundException("Patient not found with ID:"+ id));
+        if (patientRepository.existsByEmail(patientRequestDTO.getEmail())) {
+            throw new EmailAlreadyExistsException("A patient with this email is already" + patientRequestDTO.getEmail());
+        }
+        patient.setName(patientRequestDTO.getName());
+        patient.setAddress(patientRequestDTO.getAddress());
+        patient.setEmail(patientRequestDTO.getEmail());
+        patient.setDateOfBirth(LocalDate.parse(patientRequestDTO.getDateOfBirth()));
+
+        Patient updatedPatient = patientRepository.save(patient);
+        return PatientMapper.toDTO(updatedPatient);
+    }
 }

@@ -1,0 +1,13 @@
+### update patient entity
+PUT http://localhost:4000/patients/123e4567-e89b-12d3-a456-426614174000
+Content-Type: application/json
+
+
+# body of request
+{
+  "name": "John Doe",
+  "email": "test222@example.com",
+  "address": "123 main street",
+  "dateOfBirth": "1995-09-09"
+}
+
