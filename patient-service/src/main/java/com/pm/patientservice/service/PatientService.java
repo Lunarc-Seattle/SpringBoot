@@ -1,5 +1,6 @@
 package com.pm.patientservice.service;
 
+import com.pm.patientservice.dto.PatientRequestDTO;
 import com.pm.patientservice.dto.PatientResponseDTO;
 import com.pm.patientservice.mapper.PatientMapper;
 import com.pm.patientservice.model.Patient;
@@ -35,5 +36,34 @@ public class PatientService {
         return patientResponseDOTs;
         //方法返回的是一个 PatientResponseDTO 类型的列表，这样前端或者调用者就能看到患者信息的格式化结果了。
     }
+
+
+    // service layer
+
+    public PatientResponseDTO createPatient (PatientRequestDTO patientRequestDTO){
+        Patient newPatient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
+
+        return PatientMapper.toDTO(newPatient);
+    }
+
+    //👉 **`PatientResponseDTO` 就是一个用来“给前端发送患者信息”的数据格式（对象）**。
+    //详细一点讲：
+    //- `DTO` 是 **Data Transfer Object** 的缩写，中文叫**数据传输对象**。
+    //- `PatientResponseDTO` 里面通常只包含**前端需要看到的患者信息**，比如名字、年龄、地址等等。
+    //- 它是从 `Patient`（数据库里的实体）转化过来的，但**不一定包含全部数据库字段**，而且可能做过处理（比如格式化日期、隐藏敏感信息）。
+    //
+    //为什么要用 `PatientResponseDTO` 而不是直接返回 `Patient`？
+    //| 为什么 | 解释 |
+    //|:---|:---|
+    //| 安全性 | 比如数据库里有身份证号、密码，前端不应该拿到 |
+    //| 灵活性 | 可以根据不同需求自定义返回内容 |
+    //| 解耦 | 让数据库模型（Patient）和外部接口（API）分开，互不影响 |
+    //| 方便维护 | 以后需求变了，改 DTO 就行，不动数据库里的实体 |
+
+    //所以简单说：
+    //- `Patient` 是数据库里的完整患者对象（很原始）。
+    //- `PatientResponseDTO` 是**准备好给外面看的患者信息**（筛选后的、整理好的）。
+
+    //（比如像“厨房的原材料” vs “餐桌上的菜”那样的比喻）
 
 }
