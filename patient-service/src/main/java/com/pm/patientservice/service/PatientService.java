@@ -32,7 +32,7 @@ public class PatientService {
         //  before replace with lamda:  List<PatientResponseDTO>  patientResponseDOTs =
         //patients.stream().map(patient -> PatientMapper.toDTO(patient)).toList();
 
-        //通过流（stream）处理患者数据，
+        //通过流（stream）处理患者数据
         // patients.stream() 表示将患者列表变成一个流，
         // map(PatientMapper::toDTO) 是用来将每个 Patient 对象转化为 PatientResponseDTO 对象，
         // 最后 toList() 会把流转换回列表。
