@@ -4,6 +4,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Maven Wrapper 支持
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
 ### STS ###
 .apt_generated
 .classpath
