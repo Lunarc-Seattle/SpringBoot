@@ -1,0 +1,15 @@
+GRPC localhost:9001/BiilingService/CreateBillingAccount
+
+# 标准 HTTP 请求 长这样：？？？？？？？
+#
+#http
+#Copy
+#Edit
+#POST http://localhost:9001/BiilingService/CreateBillingAccount
+#Content-Type: application/json
+
+{
+  "patientID": "12333",
+  "name": "John Doe",
+  "email": "john.doe@example.com"
+}
