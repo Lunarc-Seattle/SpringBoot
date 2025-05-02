@@ -5,7 +5,7 @@ Content-Type: application/json
 
 # body of request
 {
-  "name": "John Doe uodate",
+  "name": "John Doe update",
   "email": "john.doe@example.com",
   "address": "123 main street",
   "dateOfBirth": "1995-09-09"

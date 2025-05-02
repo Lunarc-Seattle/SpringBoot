@@ -5,7 +5,7 @@ Content-Type: application/json
 
 # body of request
 {
-  "name": "JOHN",
+  "name": "John Doe with unique",
   "email": "test@exaplme.com",
   "address": "123 main street",
   "dateOfBirth": "1999-09-09",

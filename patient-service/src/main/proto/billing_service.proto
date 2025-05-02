@@ -1,0 +1,43 @@
+// this file describe hwo to inter act with GRPC server
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+// 这一行告诉编译器，如果你使用 Java 编程语言来生成代码时，要把每个类放在不同的文件里，而不是把所有的类都放在一个文件里。这样可以让代码更清晰。
+option java_package = "billing";
+//option java_package = "billing";
+//这一行指定了生成的 Java 代码的包名是 billing。包名就是代码的“文件夹”名称，用来组织代码。
+
+service BillingService {
+  rpc CreateBillingAccount (BillingRequest) returns (BillingResponse);
+}
+//这一部分定义了一个服务 BillingService，里面有一个方法（叫做 rpc）。
+//rpc CreateBillingAccount 是方法的名称，表示创建一个账单账户。
+//BillingRequest 是请求消息，表示客户端发送的请求数据。
+//BillingResponse 是响应消息，表示服务端返回的响应数据。
+message BillingRequest {
+  string patientId = 1;
+  string name = 2;
+  string email = 3;
+}
+//这一部分定义了 BillingRequest 消息，它包含了三个字段：
+//patientId：字符串类型，表示患者的 ID。
+//name：字符串类型，表示患者的姓名。
+//email：字符串类型，表示患者的电子邮件地址。
+//每个字段后面的数字（如 = 1）是字段的标签编号，这有助于在序列化和反序列化时识别字段。
+
+message BillingResponse {
+  string accountId = 1;
+  string status = 2;
+}
+//这一部分定义了 BillingResponse 消息，它包含了两个字段：
+//accountId：字符串类型，表示账单账户的 ID。
+//status：字符串类型，表示账单账户的状态（例如“已创建”或“创建失败”）。
+
+
+
+// 总结：这个 proto 文件定义了一个服务 BillingService，它有一个方法 CreateBillingAccount，用于创建账单账户。
+//BillingRequest 和 BillingResponse 定义了请求和响应的格式。
+//请求包含患者的 ID、姓名和电子邮件。
+//响应包含账单账户的 ID 和状态。
+//这个文件的作用是告诉系统如何通过 gRPC 进行服务间通信，特别是在账单创建时传递患者信息和返回账单账户信息。

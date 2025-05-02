@@ -1,11 +1,22 @@
-# 使用官方 OpenJDK 镜像作为基础镜像
-FROM openjdk:17-jdk-slim
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
-# 设置工作目录
 WORKDIR /app
 
-# 将打包好的 jar 文件复制到容器中
-COPY target/*.jar app.jar
+COPY pom.xml .
 
-# 启动 Spring Boot 应用
+RUN mvn dependency:go-offline -B
+
+COPY src ./src
+
+RUN mvn clean package
+
+FROM openjdk:21-jdk AS runner
+
+WORKDIR /app
+
+COPY --from=builder ./app/target/patient-service-0.0.1-SNAPSHOT.jar ./app.jar
+
+EXPOSE 4000
+# zhelishao
+
 ENTRYPOINT ["java", "-jar", "app.jar"]

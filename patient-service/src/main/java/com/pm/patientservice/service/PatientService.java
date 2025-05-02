@@ -4,23 +4,31 @@ import com.pm.patientservice.dto.PatientRequestDTO;
 import com.pm.patientservice.dto.PatientResponseDTO;
 import com.pm.patientservice.exception.EmailAlreadyExistsException;
 import com.pm.patientservice.exception.PatientNotFoundException;
+//import com.pm.patientservice.grpc.BillingServiceGrpcClient;
+//import com.pm.patientservice.kafka.KafkaProducer;
+import com.pm.patientservice.grpc.BillingServiceGrpcClient;
 import com.pm.patientservice.mapper.PatientMapper;
 import com.pm.patientservice.model.Patient;
 import com.pm.patientservice.repository.PatientRepository;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Slf4j
 @Service //@Service 是一个注解，表示这个类是一个服务类（即包含业务逻辑的类）。
 public class PatientService {
-    private PatientRepository patientRepository;
+    private final PatientRepository patientRepository;
+    private  final BillingServiceGrpcClient billingServiceGrpcClient;
 
-    public PatientService(PatientRepository patientRepository) {
+
+    public PatientService(PatientRepository patientRepository, BillingServiceGrpcClient billingServiceGrpcClient) {
         //这是构造函数，它在创建 PatientService 对象时会注入一个 PatientRepository，也就是数据库操作的工具，帮助获取患者信息。
         this.patientRepository = patientRepository;
+        this.billingServiceGrpcClient = billingServiceGrpcClient;
     }
 
     public List<PatientResponseDTO> getPatients() {
@@ -49,6 +57,7 @@ public class PatientService {
             throw new EmailAlreadyExistsException("A patient with this email is already" + patientRequestDTO.getEmail());
         }
         Patient newPatient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
+        billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(), newPatient.getName(),newPatient.getEmail());
 
         return PatientMapper.toDTO(newPatient);
     }
@@ -75,7 +84,30 @@ public class PatientService {
 
 
     public PatientResponseDTO updatePatient(UUID id, PatientRequestDTO patientRequestDTO) {
+        //打log debug
+        log.info("🚀 Received request to update patient with id: {}", id);
+        log.info("Looking for patient with id: " + id); // 打印ID，确认请求进来的是正确的
+
+
+        // 直接查数据库
+        Optional<Patient> patientOptional = patientRepository.findById(id);
+
+        log.info("🔍 Database query result - Patient found: {}", patientOptional.isPresent());
+        // 打印是否找到Patient
+
+        if (!patientOptional.isPresent()) {
+            throw new PatientNotFoundException("Patient with id " + id + " not found");
+        }
+
+        // 如果查到了，继续走正常逻辑
+
+
+        // 如果找到了，继续处理
+
         Patient patient = patientRepository.findById(id).orElseThrow(()->new PatientNotFoundException("Patient not found with ID:"+ id));
+
+        log.info("✅ Found patient name: {}", patient.getName());
+
         // check if there is any patient with same email but with different id
         if (patientRepository.existsByEmailAndIdNot(patientRequestDTO.getEmail(),id)) {
             //检查是否有其他患者(id)已经使用了这个 email（除了当前正在更新的这个患者自己）
@@ -94,3 +126,5 @@ public class PatientService {
         patientRepository.deleteById(id);
     }
 }
+
+
