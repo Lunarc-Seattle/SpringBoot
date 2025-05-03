@@ -1,0 +1,7 @@
+### GET request to validate Token
+GET http://localhost:4004/auth/validate
+Authorization: Bearer asdasdasdasd
+#Authorization: Bearer {{token}}
+### 这里的token会被body里的取代
+ jjiijojijinklmkmlm
+### 会从 Bearer <token> 里取出 <token> 部分，交给 authService.validateToken() 来验证。

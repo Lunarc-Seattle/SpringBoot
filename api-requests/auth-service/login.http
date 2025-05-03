@@ -1,0 +1,13 @@
+
+### Login Request to retrieve a token
+
+### 点击login就会进method
+POST http://localhost:4005/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser@test.com",
+  "password": "password123"
+}
+
+> {% client.global.set("token", response.body.token) %}

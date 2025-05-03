@@ -1,8 +1,0 @@
-POST http://localhost:4005/login
-## 点击login就会进method
-Content-Type:application/json
-
-{
-  "email" : "testuser@test.com",
-  "password": "123"
-}

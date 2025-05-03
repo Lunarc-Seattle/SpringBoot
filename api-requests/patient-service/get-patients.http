@@ -1,5 +1,7 @@
 ### get request to get all patients、
 GET http://localhost:4004/api/patients
+Authorization: Bearer {{token}}
+
 
 #GET http://localhost:4000/patients
 ### 4004 改为，因为不可以直接连接到server了，需要改为链接api Gateway

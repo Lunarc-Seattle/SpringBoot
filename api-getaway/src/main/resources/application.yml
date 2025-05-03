@@ -1,71 +1,60 @@
 server:
   port: 4004
-  # Gateway listens on port 4004
-  #API Gateway \u8FD9\u4E2A\u670D\u52A1\uFF0C\u76D1\u542C\u672C\u5730 4004 \u7AEF\u53E3\u3002
-  #\u6240\u4EE5\u5F53\u4F60\u8BBF\u95EE http://localhost:4004\uFF0C\u5B9E\u9645\u4E0A\u5C31\u662F\u8BF7\u6C42\u5230\u4F60\u7684 Gateway\u3002
+  # Gateway 这个服务，监听本地 4004 端口。
+  # 所以当你访问 http://localhost:4004，其实就是请求到你的 Gateway。
 
 spring:
   cloud:
     gateway:
       routes:
         - id: auth-service-route
-          uri: http://auth-service:4000
-          #\u8FD9\u662F\u7ED9 Gateway \u914D\u7F6E\u4E00\u4E2A\u8DEF\u7531\u89C4\u5219\uFF08route\uFF09\u3002
-          #\u8FD9\u4E2A auth-service-route \u7684\u4F5C\u7528\u662F\uFF1A\u5982\u679C\u8BF7\u6C42\u5339\u914D\u89C4\u5219\uFF0C\u5B83\u5C31\u4F1A\u8F6C\u53D1\u5230\u670D\u52A1 auth-service:4000\u3002
-          #auth-service \uD83D\uDC49 \u662F\u6307 Docker \u91CC\u7684\u670D\u52A1\u540D\uFF0C\u6216\u8005 Kubernetes \u91CC\u7684\u670D\u52A1\u540D\u3002
-          #:4000 \uD83D\uDC49 \u90A3\u4E2A\u670D\u52A1\u76D1\u542C\u7684\u7AEF\u53E3\u662F 4000\u3002
+          uri: http://auth-service:4005
+          # 这个 route 的作用是：
+          # 如果请求匹配下面的规则，它会转发到服务 auth-service:4000。
+          # auth-service 👉 指 Docker 里的服务名，或者 Kubernetes 里的服务名。
+          # :4000 👉 那个服务监听的端口是 4000。
 
           predicates:
             - Path=/auth/**
-            # \u53EA\u6709\u5F53\u8BF7\u6C42\u8DEF\u5F84\u662F /auth/** \u7684\u65F6\u5019\uFF0C\u624D\u4F1A\u89E6\u53D1\u8FD9\u4E2A\u8DEF\u7531\u89C4\u5219\u3002
+            # 只有当请求路径是 /auth/** 的时候，才会触发这个路由规则。
+            # 例如：
+            # http://localhost:4004/auth/login 👉 会匹配 ✔️
+            # http://localhost:4004/auth/register 👉 会匹配 ✔️
+            # http://localhost:4004/api/patients 👉 不会匹配 ❌
 
-            #\u4F8B\u5982\uFF1A
-            #http://localhost:4004/auth/login \uD83D\uDC49 \u4F1A\u5339\u914D \u2714\uFE0F
-            #http://localhost:4004/auth/register \uD83D\uDC49 \u4F1A\u5339\u914D \u2714\uFE0F
-            #http://localhost:4004/api/patients \uD83D\uDC49 \u4E0D\u4F1A\u5339\u914D \u274C
           filters:
             - StripPrefix=1
-            #\u5728\u8F6C\u53D1\u5230\u540E\u7AEF\u670D\u52A1\u524D\uFF0C\u53BB\u6389 URL \u524D\u9762\u7684 1\u6BB5\u8DEF\u5F84\u3002
-            #\u4E3E\u4F8B\uFF1A\u8BBF\u95EE http://localhost:4004/auth/login
-            #Gateway\u4F1A\u8F6C\u53D1\u4E3A\uFF1Ahttp://auth-service:4000/login
-            #\u2714\uFE0F \u8DEF\u5F84\u524D\u7F00 /auth \u88AB\u81EA\u52A8\u53BB\u6389\uFF08strip\u6389\u4E861\u6BB5\u524D\u7F00\uFF09\u3002
+            # 在转发到后端服务前，去掉 URL 前面的 1段路径。
+            # 例如：访问 http://localhost:4004/auth/login
+            # Gateway 会转发为：http://auth-service:4000/login
+            # ✔️ 路径前缀 /auth 被自动去掉（strip掉1段前缀）。
 
-
-
-            # REST -\u300B http://localhost:4004/api/patients
-            # API -> http://patient0service:4000/patients
-            # \u679C\u4F60\u6709\u53E6\u4E00\u4E2A\u670D\u52A1\u53EB patient-service\uFF0C\u5E76\u4E14 Gateway \u4E5F\u7ED9\u5B83\u914D\u7F6E\u4E86\u8DEF\u7531\uFF0C\u6BD4\u5982\uFF1A
-            #- id: patient-service-route
-            #  uri: http://patient-service:4000
-            #  predicates:
-            #    - Path=/api/**
-            #  filters:
-            #    - StripPrefix=1
-            #\uD83D\uDFE2 \u90A3\u4E48\uFF1A
-            #\u5F53\u4F60\u8BBF\u95EE http://localhost:4004/api/patients\uFF08\u5BF9\u5916\u66B4\u9732\u7684 REST API\uFF09
-            #Gateway \u4F1A\u8F6C\u53D1\u6210 http://patient-service:4000/patients\uFF08\u5185\u90E8\u5B9E\u9645\u8BBF\u95EE\u7684\u670D\u52A1
-        # Route for /api/patients/** to patient-service
+        # REST 👉 http://localhost:4004/api/patients
+        # API 实际访问 👉 http://patient-service:4000/patients
+        # 如果你有另一个服务叫 patient-service，并且 Gateway 也给它配置了路由，比如：
         - id: patient-service-route
-          uri: http://patient-service:4004
+          uri: http://patient-service:4000
           predicates:
             - Path=/api/patients/**
           filters:
             - StripPrefix=1
             - JwtValidation
+            # 这个 JwtValidation 是自定义的过滤器，用来做 token 验证。
 
-        # Route for /api/docs/patients to patient-service /v3/api-docs
+        # 配置 Swagger API 文档的转发规则
+        # 这个是给 patient-service 的接口文档
         - id: api-docs-patient-route
           uri: http://patient-service:4000
           predicates:
             - Path=/api-docs/patients
           filters:
             - RewritePath=/api-docs/patients,/v3/api-docs
-            # \u5982\u679C\u4F60\u8BBF\u95EE\uFF1A
+            # 如果你访问：
+            # http://localhost:4004/api-docs/patients
+            # Gateway 会帮你自动转发成：
+            # http://patient-service:4000/v3/api-docs
 
-            # REST CLIENT  http://localhost:4004/api-docs/patients
-            #API-Gateway \u4F1A\u5E2E\u4F60\u81EA\u52A8\u8F6C\u53D1\u6210\uFF1A
-            #http://patient-service:4000/v3/api-docs
-
+        # 这个是给 auth-service 的接口文档
         - id: api-docs-auth-route
           uri: http://auth-service:4005
           predicates:

@@ -76,17 +76,42 @@ public class AuthController {
     }
 
     @Operation(summary = "Validate Token")
+    //这是 Swagger/OpenAPI 的注解，用来描述这个接口。
+    //当你生成 API 文档时，这个接口会显示为 "Validate Token"。
     @GetMapping("/validate")
+    //说明这是一个 GET 请求。路径是 /validate。
+    //
+    //也就是说，当你请求：GET /validate
+    //它就会触发这个方法。
     public ResponseEntity<Void> validateToken(
+            //这是这个接口的方法，ResponseEntity<Void> 意味着返回一个 HTTP 响应
+            //
+            //不带 body（Void 就是空）
+            //只用 HTTP 状态码来表示成功/失败。
             @RequestHeader("Authorization") String authHeader) {
+            //这个是从 请求头 中拿到 Authorization 字段。
+            //例如，前端请求的时候，头部会这样写：
+            //Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...
+            //它会把整个 Authorization 字符串传进来。
 
         // Authorization: Bearer <token>
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+            //如果 Authorization 头：没有传（null）或者不是以 "Bearer " 开头
+            //就返回 401 Unauthorized，表示未授权。
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
 
         return authService.validateToken(authHeader.substring(7))
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        //authHeader.substring(7)：
+        //把 "Bearer " 这7个字去掉，拿到真正的token。
+        //例如："Bearer abcdefg" ➔ 拿到 "abcdefg"
+        //然后调用你的 authService.validateToken(token) 去检查这个 token 是否有效。
+        //如果有效（返回 true）：
+        //返回 200 OK
+        //如果无效（返回 false）：
+        //返回 401 Unauthorized
     }
 }
