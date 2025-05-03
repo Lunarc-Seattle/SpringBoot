@@ -1,2 +1,23 @@
-### get request to get all patients
-GET http://localhost:4000/patients
+### get request to get all patients、
+GET http://localhost:4004/api/patients
+
+#GET http://localhost:4000/patients
+### 4004 改为，因为不可以直接连接到server了，需要改为链接api Gateway
+### 原来：
+### GET http://localhost:4000/patients
+### 这个是直接请求 **patients service** （例如 Spring Boot 微服务）。
+
+#### 现在，如果你的架构有了 **API Gateway**（比如用 Spring Cloud Gateway 或 NGINX 或其他网关）：
+###* **客户端** 不应该直接访问 `:4000` ，而是应该访问 **API Gateway 的端口**
+
+### 所以 4004 改为，因为不可以直接连接到server了，需要改为链接api Gateway
+
+#### 举个例子：
+###如果你的 **API Gateway** 跑在 `localhost:4004`，那么你的请求应该是：
+
+### GET http://localhost:4004/patients
+### 然后 **API Gateway** 再帮你转发到真正的 `patient-service`（可能还是 4000，但对外隐藏起来了）。
+
+#### ✅ 总结
+### `4000` 👉 **直接访问服务** （开发时可以，但生产中不推荐）
+### `4004` 👉 **通过 API Gateway 访问**（统一入口，推荐做法）
