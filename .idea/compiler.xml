@@ -11,6 +11,7 @@
         <module name="api-getaway" />
         <module name="auth-service" />
         <module name="analytics_service" />
+        <module name="integration-tests" />
         <module name="billing-service" />
       </profile>
     </annotationProcessing>
