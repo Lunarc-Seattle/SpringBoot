@@ -88,6 +88,23 @@ public class LocalStack extends Stack {
                 .removalPolicy(RemovalPolicy.DESTROY)
                 .build();
     }
+
+    private CfnCluster createMskCluster(){
+        return CfnCluster.Builder.create(this, "MskCluster")
+                .clusterName("kafa-cluster")
+                .kafkaVersion("2.8.0")
+                .numberOfBrokerNodes(1)
+                .brokerNodeGroupInfo(CfnCluster.BrokerNodeGroupInfoProperty.builder()
+                        .instanceType("kafka.m5.xlarge")
+                        .clientSubnets(vpc.getPrivateSubnets().stream()
+                                .map(ISubnet::getSubnetId)
+                                .collect(Collectors.toList()))
+                        .brokerAzDistribution("DEFAULT")
+                        .build())
+                .build();
+    }
+
+    
     public static void main(final String[] args) {
         App app = new App(AppProps.builder().outdir("./cdk.out").build());
         StackProps props = StackProps.builder()
