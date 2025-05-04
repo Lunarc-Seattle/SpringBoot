@@ -8,6 +8,10 @@ option java_package = "billing";
 //option java_package = "billing";
 //这一行指定了生成的 Java 代码的包名是 billing。包名就是代码的“文件夹”名称，用来组织代码。
 
+
+option java_outer_classname = "BillingServiceOuterClass";
+
+
 service BillingService {
   rpc CreateBillingAccount (BillingRequest) returns (BillingResponse);
 }
